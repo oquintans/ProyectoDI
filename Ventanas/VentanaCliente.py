@@ -1,4 +1,5 @@
 from gi.repository import Gtk
+from BD.ConexionBD import ConexionBD
 
 
 class WindowC(Gtk.Window):
@@ -6,6 +7,7 @@ class WindowC(Gtk.Window):
         Gtk.Window.__init__(self, title="Cliente")
         self.set_border_width(10)
         self.set_default_size(500, 100)
+        self.conn = ConexionBD()
 
         # LayoutBox
         self.box = Gtk.Box(spacing=6)
@@ -19,8 +21,8 @@ class WindowC(Gtk.Window):
         self.box.pack_start(self.list_box, True, True, 0)
 
         # TreeView
-        self.tree = Gtk.TreeView()
-        self.insertarCols(5)
+        self.tree = Gtk.TreeView(self.insertarRows())
+        self.insertarCols(7)
 
         # Row1
         self.row1 = Gtk.ListBoxRow()
@@ -43,7 +45,6 @@ class WindowC(Gtk.Window):
         self.v_box3 = Gtk.Box(Gtk.Orientation.VERTICAL)
         self.hor_box3.pack_start(self.v_box3, True, True, 1)
 
-
         # Labels
         l_tipo = Gtk.Label("Tipo")
         l_marca = Gtk.Label("Marca")
@@ -59,6 +60,9 @@ class WindowC(Gtk.Window):
         self.b_comprar = Gtk.Button(label="Comprar")
         self.b_consultar = Gtk.Button(label="Consultar")
         self.b_salir = Gtk.Button(label="Salir")
+
+        self.b_consultar.connect("clicked", self.conn.select)
+        self.b_salir.connect("clicked", self.cerrar)
 
         self.v_box1.add(l_tipo)
         self.v_box1.add(l_marca)
@@ -79,7 +83,17 @@ class WindowC(Gtk.Window):
 
     def insertarCols(self, num):
         for i in range(num):
-            colum = Gtk.TreeViewColumn(title=str(i))
+            colum = Gtk.TreeViewColumn(title=str(i + 1))
             colum.set_visible(True)
             colum.set_resizable(True)
             self.tree.append_column(colum)
+
+    def cerrar(self, button):
+        self.close()
+
+    def insertarRows(self):
+        self.list = Gtk.ListStore(str, str, str, str, int, int, int)
+        lista = ["0001", "Procesador", "Intel", "I5", 150, 5, 3]
+        self.list.append(list(lista))
+        self.list.append(lista)
+        return self.list

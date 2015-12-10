@@ -84,7 +84,7 @@ class WindowL(Gtk.Window):
         pass2 = usuarios[nombre]
         if (pass2 == pass1):
             print("Login succesfull")
-            ConexionBD()
+            # ConexionBD()
             self.close()
             self.cargarVentanaCli()
         else:
@@ -92,13 +92,9 @@ class WindowL(Gtk.Window):
 
     def cargarVentanaCli(self):
         """Carga la ventana de Cliente"""
-        # Instanciar
         fiestra = WindowC()
-        # Posicion Ventana
         fiestra.set_position(Gtk.WindowPosition.CENTER)
-        # Resizable
         fiestra.set_resizable(True)
-        # Cierre on Click
         fiestra.connect("delete-event", Gtk.main_quit)
         # Mostrar ventana
         fiestra.show_all()
