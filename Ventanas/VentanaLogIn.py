@@ -1,9 +1,11 @@
 from gi.repository import Gtk
+from BD.ConexionBD import ConexionBD
+from Ventanas.VentanaCliente import WindowC
 
 __author__ = 'oquintansocampo'
 
 
-class Window(Gtk.Window):
+class WindowL(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="Login")
         self.set_border_width(10)
@@ -54,35 +56,52 @@ class Window(Gtk.Window):
         label_pass = Gtk.Label("Password: ")
 
         # TextFields
-        field_user = Gtk.Entry()
-        field_pass = Gtk.Entry()
+        self.field_user = Gtk.Entry()
+        self.field_pass = Gtk.Entry()
+        self.field_pass.set_visibility(False)
 
         # Buttons
-        log_button = Gtk.Button(label="Entrar")
+        self.log_button = Gtk.Button(label="Entrar")
+        self.log_button.connect("clicked", self.confirmarcion)
 
         self.v_box1.pack_start(label_title, True, True, 1)
         self.v_box2.pack_start(label_user, True, True, 1)
-        self.v_box2.pack_start(field_user, True, True, 1)
+        self.v_box2.pack_start(self.field_user, True, True, 1)
         self.v_box3.pack_start(label_pass, True, True, 1)
-        self.v_box3.pack_start(field_pass, True, True, 1)
-        self.v_box4.pack_start(log_button, True, True, 1)
+        self.v_box3.pack_start(self.field_pass, True, True, 1)
+        self.v_box4.pack_start(self.log_button, True, True, 1)
 
         self.list_box.add(self.row1)
         self.list_box.add(self.row2)
         self.list_box.add(self.row3)
         self.list_box.add(self.row4)
 
+    def confirmarcion(self, button):
+        """Confirma que la contraseña y el usuario estan guardados"""
+        usuarios = {"cliente": "cliente", "admin": "admin"}
+        nombre = self.field_user.get_text()
+        pass1 = self.field_pass.get_text()
+        pass2 = usuarios[nombre]
+        if (pass2 == pass1):
+            print("Login succesfull")
+            ConexionBD()
+            self.close()
+            self.cargarVentanaCli()
+        else:
+            print("ERROR: Contraseña o nombre de usuario incorrectos")
 
-# Instanciar
-fiestra = Window()
-# Posicion Ventana
-fiestra.set_position(Gtk.WindowPosition.CENTER)
-# Resizable
-fiestra.set_resizable(False)
-# Cierre on Click
-fiestra.connect("delete-event", Gtk.main_quit)
-# Mostrar ventana
-fiestra.show_all()
-#fiestra.set_decorated(True)
-# Activar atencion de eventos
-Gtk.main()
+    def cargarVentanaCli(self):
+        """Carga la ventana de Cliente"""
+        # Instanciar
+        fiestra = WindowC()
+        # Posicion Ventana
+        fiestra.set_position(Gtk.WindowPosition.CENTER)
+        # Resizable
+        fiestra.set_resizable(True)
+        # Cierre on Click
+        fiestra.connect("delete-event", Gtk.main_quit)
+        # Mostrar ventana
+        fiestra.show_all()
+        # fiestra.set_decorated(True)
+        # Activar atencion de eventos
+        Gtk.main()

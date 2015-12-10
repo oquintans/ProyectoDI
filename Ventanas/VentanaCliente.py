@@ -1,7 +1,7 @@
 from gi.repository import Gtk
 
 
-class Window(Gtk.Window):
+class WindowC(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="Cliente")
         self.set_border_width(10)
@@ -72,7 +72,6 @@ class Window(Gtk.Window):
         self.v_box3.add(self.b_consultar)
         self.v_box3.add(self.b_salir)
 
-
         self.list_box.add(self.row1)
         self.list_box.add(self.row2)
         self.list_box.add(self.row3)
@@ -83,20 +82,4 @@ class Window(Gtk.Window):
             colum = Gtk.TreeViewColumn(title=str(i))
             colum.set_visible(True)
             colum.set_resizable(True)
-            colum.add_attribute()
             self.tree.append_column(colum)
-
-
-# Instanciar
-fiestra = Window()
-# Posicion Ventana
-fiestra.set_position(Gtk.WindowPosition.CENTER)
-# Resizable
-fiestra.set_resizable(True)
-# Cierre on Click
-fiestra.connect("delete-event", Gtk.main_quit)
-# Mostrar ventana
-fiestra.show_all()
-# fiestra.set_decorated(True)
-# Activar atencion de eventos
-Gtk.main()

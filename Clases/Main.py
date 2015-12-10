@@ -1,8 +1,15 @@
+from gi.repository import Gtk
+from BD.ConexionBD import ConexionBD
 from Clases import Componentes
+from Ventanas.VentanaLogIn import WindowL
+# from Ventanas.VentanaCliente import WindowC
 
-comp= Componentes.Componentes("A0001", "T.Grafica", "Nvidia", "GTX650", 100, 10, 5)
-comp.to_string()
-compra=comp.comprar()
-while(compra!=True):
-    comp.comprar()
-comp.to_string()
+
+# Instanciar
+fiestra = WindowL()
+fiestra.set_position(Gtk.WindowPosition.CENTER)
+fiestra.set_resizable(False)
+fiestra.connect("delete-event", Gtk.main_quit)
+fiestra.show_all()
+Gtk.main()
+
