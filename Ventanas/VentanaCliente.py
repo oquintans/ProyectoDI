@@ -1,3 +1,4 @@
+from DistUpgrade.GtkProgress import GtkAcquireProgress
 from gi.repository import Gtk
 from BD.ConexionBD import ConexionBD
 
@@ -21,8 +22,25 @@ class WindowC(Gtk.Window):
         self.box.pack_start(self.list_box, True, True, 0)
 
         # TreeView
-        self.tree = Gtk.TreeView(self.insertarRows())
-        self.insertarCols(7)
+        self.model = Gtk.ListStore(str, str, str, str, int, int, int)
+        self.tree = Gtk.TreeView(self.model)
+
+        # TreeViewColumn
+        cellRenderer = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn("ID", cellRenderer, text=0)
+        column2 = Gtk.TreeViewColumn("Tipo", cellRenderer, text=1)
+        column3 = Gtk.TreeViewColumn("Marca", cellRenderer, text=2)
+        column4 = Gtk.TreeViewColumn("Modelo", cellRenderer, text=3)
+        column5 = Gtk.TreeViewColumn("Precio", cellRenderer, text=4)
+        column6 = Gtk.TreeViewColumn("U.Stock", cellRenderer, text=5)
+        column7 = Gtk.TreeViewColumn("U.Almacen", cellRenderer, text=6)
+        self.tree.append_column(column)
+        self.tree.append_column(column2)
+        self.tree.append_column(column3)
+        self.tree.append_column(column4)
+        self.tree.append_column(column5)
+        self.tree.append_column(column6)
+        self.tree.append_column(column7)
 
         # Row1
         self.row1 = Gtk.ListBoxRow()
@@ -45,28 +63,30 @@ class WindowC(Gtk.Window):
         self.v_box3 = Gtk.Box(Gtk.Orientation.VERTICAL)
         self.hor_box3.pack_start(self.v_box3, True, True, 1)
 
-        # Labels
-        l_tipo = Gtk.Label("Tipo")
-        l_marca = Gtk.Label("Marca")
-        l_modelo = Gtk.Label("Modelo")
-
         # ComboBox
         self.cbTipo = Gtk.ComboBoxText()
         self.cbMarca = Gtk.ComboBoxText()
         self.cbModelo = Gtk.ComboBoxText()
-        self.cbTipo.insert_text(1, "Procesadores")
+        self.cbTipo.insert_text(0, "Tipo")
+        self.cbTipo.insert_text(1, "Procesador")
+        self.cbTipo.insert_text(2, "T. Grafica")
+        self.cbTipo.insert_text(3, "RAM")
+        self.cbTipo.insert_text(4, "HDD")
+        self.cbTipo.insert_text(5, "Placa Base")
+        self.cbTipo.set_active(0)
+        self.cbMarca.insert_text(0, "Marca")
+        self.cbModelo.insert_text(0, "Modelo")
+        self.cbMarca.set_active(0)
+        self.cbModelo.set_active(0)
 
         # Botones
         self.b_comprar = Gtk.Button(label="Comprar")
         self.b_consultar = Gtk.Button(label="Consultar")
         self.b_salir = Gtk.Button(label="Salir")
 
-        self.b_consultar.connect("clicked", self.conn.select)
+        # self.b_comprar.connect("clicked",)
+        self.b_consultar.connect("clicked", self.consultar)
         self.b_salir.connect("clicked", self.cerrar)
-
-        self.v_box1.add(l_tipo)
-        self.v_box1.add(l_marca)
-        self.v_box1.add(l_modelo)
 
         self.v_box2.add(self.cbTipo)
         self.v_box2.add(self.cbMarca)
@@ -81,19 +101,13 @@ class WindowC(Gtk.Window):
         self.list_box.add(self.row3)
         self.list_box.add(self.tree)
 
-    def insertarCols(self, num):
-        for i in range(num):
-            colum = Gtk.TreeViewColumn(title=str(i + 1))
-            colum.set_visible(True)
-            colum.set_resizable(True)
-            self.tree.append_column(colum)
+    def consultar(self, button):
+        """Consuta en la base de datos e introduce los datos en el TreeView"""
+        mod = Gtk.ListStore(str, str, str, str, int, int, int)
+        for i in self.conn.select2(self.cbTipo.get_active_text):
+            mod.append([i[0], i[1], i[2], i[3], i[4], i[5], i[6]])
+        self.tree.set_model(mod)
 
     def cerrar(self, button):
+        """Cierra el programa"""
         self.close()
-
-    def insertarRows(self):
-        self.list = Gtk.ListStore(str, str, str, str, int, int, int)
-        lista = ["0001", "Procesador", "Intel", "I5", 150, 5, 3]
-        self.list.append(list(lista))
-        self.list.append(lista)
-        return self.list
