@@ -66,31 +66,45 @@ class WindowC(Gtk.Window):
         # ComboBox
         self.cbTipo = Gtk.ComboBoxText()
         self.cbMarca = Gtk.ComboBoxText()
-        self.cbModelo = Gtk.ComboBoxText()
+        self.cbPrecio = Gtk.ComboBoxText()
+
         self.cbTipo.insert_text(0, "Tipo")
         self.cbTipo.insert_text(1, "Procesador")
         self.cbTipo.insert_text(2, "T. Grafica")
         self.cbTipo.insert_text(3, "RAM")
         self.cbTipo.insert_text(4, "HDD")
         self.cbTipo.insert_text(5, "Placa Base")
-        self.cbTipo.set_active(0)
+
         self.cbMarca.insert_text(0, "Marca")
-        self.cbModelo.insert_text(0, "Modelo")
+        self.cbMarca.insert_text(1, "ASUS")
+        self.cbMarca.insert_text(2, "Intel")
+        self.cbMarca.insert_text(3, "AMD")
+        self.cbMarca.insert_text(4, "MSI")
+        self.cbMarca.insert_text(5, "GigaByte")
+
+        self.cbPrecio.insert_text(0, "Precio")
+        self.cbPrecio.insert_text(1, "<20")
+        self.cbPrecio.insert_text(2, "20-50")
+        self.cbPrecio.insert_text(3, "50-100")
+        self.cbPrecio.insert_text(4, "100-200")
+        self.cbPrecio.insert_text(5, ">200")
+
+        self.cbTipo.set_active(0)
         self.cbMarca.set_active(0)
-        self.cbModelo.set_active(0)
+        self.cbPrecio.set_active(0)
 
         # Botones
         self.b_comprar = Gtk.Button(label="Comprar")
         self.b_consultar = Gtk.Button(label="Consultar")
         self.b_salir = Gtk.Button(label="Salir")
 
-        # self.b_comprar.connect("clicked",)
+        self.b_comprar.connect("clicked", self.comprar)
         self.b_consultar.connect("clicked", self.consultar)
         self.b_salir.connect("clicked", self.cerrar)
 
         self.v_box2.add(self.cbTipo)
         self.v_box2.add(self.cbMarca)
-        self.v_box2.add(self.cbModelo)
+        self.v_box2.add(self.cbPrecio)
 
         self.v_box3.add(self.b_comprar)
         self.v_box3.add(self.b_consultar)
@@ -104,10 +118,20 @@ class WindowC(Gtk.Window):
     def consultar(self, button):
         """Consuta en la base de datos e introduce los datos en el TreeView"""
         mod = Gtk.ListStore(str, str, str, str, int, int, int)
-        for i in self.conn.select2(self.cbTipo.get_active_text):
+        for i in self.conn.select():
             mod.append([i[0], i[1], i[2], i[3], i[4], i[5], i[6]])
-        self.tree.set_model(mod)
+        self.model = mod
+        self.tree.set_model(self.model)
 
-    def cerrar(self, button):
-        """Cierra el programa"""
-        self.close()
+    def comprar(self, button):
+
+        click = self.tree.get_selection()
+        model, treeiter = click.get_selected()
+        if treeiter != None:
+            id = model[treeiter][0]
+            self.conn.update(id)
+            self.consultar(None)
+
+        def cerrar(self, button):
+            """Cierra el programa"""
+            self.close()

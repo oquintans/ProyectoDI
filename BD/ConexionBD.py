@@ -18,18 +18,11 @@ class ConexionBD:
         self.lista = []
         self.cursor.execute("""select * from componentes""")
         for result in self.cursor:
-            print("ID: " + result[0] +
-                  " - Tipo: " + result[1] +
-                  " - Marca: " + result[2] +
-                  " - Modelo: " + str(result[3]) +
-                  " - Precio: " + str(result[4]) +
-                  " - UStock: " + str(result[5]) +
-                  " - UAlmacen: " + str(result[6]))
             self.lista.append([result[0], result[1], result[2], result[3], result[4], result[5], result[6]])
         return self.lista
 
-    def select2(self,tipo):
-        self.lista=[]
+    def select2(self, tipo):
+        self.lista = []
         self.cursor.execute("""select * from componentes where tipo='Procesador'""")
         for result in self.cursor:
             print("ID: " + result[0] +
@@ -57,3 +50,6 @@ class ConexionBD:
         self.cursor.execute("""insert into componentes values('0012','Procesador','AMD','FX6300',105,0,3)""")
         self.cursor.execute("""insert into componentes values('0013','Placa Base','ASUS','8845z',150,5,3)""")
         self.db.commit()
+
+    def update(self,id):
+        self.cursor.execute("""update componentes precio=precio-1 where id=?""")
