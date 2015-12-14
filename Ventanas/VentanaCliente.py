@@ -82,12 +82,12 @@ class WindowC(Gtk.Window):
         self.cbMarca.insert_text(4, "MSI")
         self.cbMarca.insert_text(5, "GigaByte")
 
-        self.cbPrecio.insert_text(0, "Precio")
-        self.cbPrecio.insert_text(1, "<20")
-        self.cbPrecio.insert_text(2, "20-50")
-        self.cbPrecio.insert_text(3, "50-100")
-        self.cbPrecio.insert_text(4, "100-200")
-        self.cbPrecio.insert_text(5, ">200")
+        self.cbPrecio.insert_text(0, "Precio <")
+        self.cbPrecio.insert_text(1, "20")
+        self.cbPrecio.insert_text(2, "50")
+        self.cbPrecio.insert_text(3, "100")
+        self.cbPrecio.insert_text(4, "200")
+        self.cbPrecio.insert_text(5, "500")
 
         self.cbTipo.set_active(0)
         self.cbMarca.set_active(0)
@@ -118,20 +118,24 @@ class WindowC(Gtk.Window):
     def consultar(self, button):
         """Consuta en la base de datos e introduce los datos en el TreeView"""
         mod = Gtk.ListStore(str, str, str, str, int, int, int)
-        for i in self.conn.select():
+        for i in self.conn.select2(self.cbTipo.get_active_text(), self.cbMarca.get_active_text(),
+                                   self.cbPrecio.get_active_text()):
             mod.append([i[0], i[1], i[2], i[3], i[4], i[5], i[6]])
         self.model = mod
         self.tree.set_model(self.model)
 
     def comprar(self, button):
-
+        """Compra una unidad reduciendo en uno la cantidad en stock"""
         click = self.tree.get_selection()
         model, treeiter = click.get_selected()
         if treeiter != None:
-            id = model[treeiter][0]
-            self.conn.update(id)
-            self.consultar(None)
+            ustock = model[treeiter][5]
+            if (ustock > 0):
+                id = model[treeiter][0]
+                self.conn.update(ustock,id)
+                self.consultar(None)
 
-        def cerrar(self, button):
-            """Cierra el programa"""
-            self.close()
+    def cerrar(self, button):
+        """Cierra el programa"""
+        self.close()
+        self.conn.close()

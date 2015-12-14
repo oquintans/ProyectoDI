@@ -21,17 +21,33 @@ class ConexionBD:
             self.lista.append([result[0], result[1], result[2], result[3], result[4], result[5], result[6]])
         return self.lista
 
-    def select2(self, tipo):
+    def select2(self, tipo, marca, precio):
         self.lista = []
-        self.cursor.execute("""select * from componentes where tipo='Procesador'""")
+        if (tipo == "Tipo" and marca == "Marca" and precio == "Precio"):
+            self.cursor.execute("""select * from componentes""")
+        elif (tipo == "Tipo" and marca == "Marca" and precio != "Precio"):
+            reg = (precio,)
+            self.cursor.execute("""select * from componentes where precio<? """, reg)
+        elif (tipo == "Tipo" and marca != "Marca" and precio == "Precio"):
+            reg = (marca,)
+            self.cursor.execute("""select * from componentes where marca=? """, reg)
+        elif (tipo == "Tipo" and marca != "Marca" and precio != "Precio"):
+            reg = (marca, precio,)
+            self.cursor.execute("""select * from componentes where marca=? and precio<? """, reg)
+        elif (tipo != "Tipo" and marca == "Marca" and precio == "Precio"):
+            reg = (tipo,)
+            self.cursor.execute("""select * from componentes where tipo=? """, reg)
+        elif (tipo != "Tipo" and marca == "Marca" and precio != "Precio"):
+            reg = (tipo, precio,)
+            self.cursor.execute("""select * from componentes where tipo=? and precio<? """, reg)
+        elif (tipo != "Tipo" and marca != "Marca" and precio == "Precio"):
+            reg = (tipo, marca,)
+            self.cursor.execute("""select * from componentes where tipo=? and marca=? """, reg)
+        elif (tipo != "Tipo" and marca != "Marca" and precio != "Precio"):
+            reg = (tipo, marca, precio,)
+            self.cursor.execute("""select * from componentes where tipo=? and marca=? and precio<? """, reg)
+
         for result in self.cursor:
-            print("ID: " + result[0] +
-                  " - Tipo: " + result[1] +
-                  " - Marca: " + result[2] +
-                  " - Modelo: " + str(result[3]) +
-                  " - Precio: " + str(result[4]) +
-                  " - UStock: " + str(result[5]) +
-                  " - UAlmacen: " + str(result[6]))
             self.lista.append([result[0], result[1], result[2], result[3], result[4], result[5], result[6]])
         return self.lista
 
@@ -51,5 +67,11 @@ class ConexionBD:
         self.cursor.execute("""insert into componentes values('0013','Placa Base','ASUS','8845z',150,5,3)""")
         self.db.commit()
 
-    def update(self,id):
-        self.cursor.execute("""update componentes precio=precio-1 where id=?""")
+    def update(self, ustock, id):
+        us = ustock - 1
+        reg = (us, id)
+        self.cursor.execute("""update componentes set uStock=? where id=?""", reg)
+        self.db.commit()
+
+    def close(self):
+        self.db.close()
