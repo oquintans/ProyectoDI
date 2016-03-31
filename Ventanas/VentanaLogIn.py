@@ -59,6 +59,8 @@ class WindowL(Gtk.Window):
         self.field_user = Gtk.Entry()
         self.field_pass = Gtk.Entry()
         self.field_pass.set_visibility(False)
+        self.field_user.set_can_focus(True)
+        self.field_pass.set_can_focus(True)
 
         # Buttons
         self.log_button = Gtk.Button(label="Entrar")
@@ -70,6 +72,11 @@ class WindowL(Gtk.Window):
         self.v_box3.pack_start(label_pass, True, True, 1)
         self.v_box3.pack_start(self.field_pass, True, True, 1)
         self.v_box4.pack_start(self.log_button, True, True, 1)
+
+        self.row1.set_can_focus(False)
+        self.row2.set_can_focus(False)
+        self.row3.set_can_focus(False)
+        self.row4.set_can_focus(False)
 
         self.list_box.add(self.row1)
         self.list_box.add(self.row2)

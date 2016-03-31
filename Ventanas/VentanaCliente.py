@@ -1,6 +1,45 @@
 from DistUpgrade.GtkProgress import GtkAcquireProgress
-from gi.repository import Gtk
+import gi
+gi.require_version('Gtk', '3.0')
+
+from gi.repository import Gtk, Gdk
 from BD.ConexionBD import ConexionBD
+
+UI_INFO = """
+<ui>
+  <menubar name='MenuBar'>
+    <menu action='FileMenu'>
+      <menu action='FileNew'>
+        <menuitem action='FileNewStandard' />
+        <menuitem action='FileNewFoo' />
+        <menuitem action='FileNewGoo' />
+      </menu>
+      <separator />
+      <menuitem action='FileQuit' />
+    </menu>
+    <menu action='EditMenu'>
+      <menuitem action='EditCopy' />
+      <menuitem action='EditPaste' />
+      <menuitem action='EditSomething' />
+    </menu>
+    <menu action='ChoicesMenu'>
+      <menuitem action='ChoiceOne'/>
+      <menuitem action='ChoiceTwo'/>
+      <separator />
+      <menuitem action='ChoiceThree'/>
+    </menu>
+  </menubar>
+  <toolbar name='ToolBar'>
+    <toolitem action='FileNewStandard' />
+    <toolitem action='FileQuit' />
+  </toolbar>
+  <popup name='PopupMenu'>
+    <menuitem action='EditCopy' />
+    <menuitem action='EditPaste' />
+    <menuitem action='EditSomething' />
+  </popup>
+</ui>
+"""
 
 
 class WindowC(Gtk.Window):
@@ -15,10 +54,19 @@ class WindowC(Gtk.Window):
         self.box.set_orientation(Gtk.Orientation.VERTICAL)
         self.add(self.box)
 
+        # Menu
+        action_group = Gtk.ActionGroup("my_actions")
+        self.add_file_menu_actions(action_group)
+        self.add_edit_menu_actions(action_group)
+        self.add_choices_menu_actions(action_group)
+        self.ui_manager = self.create_ui_manager()
+        self.ui_manager.insert_action_group(action_group)
+        self.menubar = self.ui_manager.get_widget("/MenuBar")
+        self.box.pack_start(self.menubar, False, False, 0)
+
         # ListBox
         self.list_box = Gtk.ListBox()
         self.list_box.set_selection_mode(Gtk.SelectionMode.NONE)
-        print(self.list_box.get_selection_mode())
         self.box.pack_start(self.list_box, True, True, 0)
 
         # TreeView
@@ -62,6 +110,10 @@ class WindowC(Gtk.Window):
         self.row3.add(self.hor_box3)
         self.v_box3 = Gtk.Box(Gtk.Orientation.VERTICAL)
         self.hor_box3.pack_start(self.v_box3, True, True, 1)
+
+        # Toolbar
+        toolbar = self.ui_manager.get_widget("/ToolBar")
+        self.v_box1.add(toolbar)
 
         # ComboBox
         self.cbTipo = Gtk.ComboBoxText()
@@ -132,10 +184,108 @@ class WindowC(Gtk.Window):
             ustock = model[treeiter][5]
             if (ustock > 0):
                 id = model[treeiter][0]
-                self.conn.update(ustock,id)
+                self.conn.update(ustock, id)
                 self.consultar(None)
 
     def cerrar(self, button):
         """Cierra el programa"""
         self.close()
         self.conn.close()
+
+    def add_file_menu_actions(self, action_group):
+        action_filemenu = Gtk.Action("FileMenu", "File", None, None)
+        action_group.add_action(action_filemenu)
+
+        action_filenewmenu = Gtk.Action("FileNew", None, None, Gtk.STOCK_NEW)
+        action_group.add_action(action_filenewmenu)
+
+        action_new = Gtk.Action("FileNewStandard", "_New",
+                                "Create a new file", Gtk.STOCK_NEW)
+        action_new.connect("activate", self.on_menu_file_new_generic)
+        action_group.add_action_with_accel(action_new, None)
+
+        action_group.add_actions([
+            ("FileNewFoo", None, "New Foo", None, "Create new foo",
+             self.on_menu_file_new_generic),
+            ("FileNewGoo", None, "_New Goo", None, "Create new goo",
+             self.on_menu_file_new_generic),
+        ])
+
+        action_filequit = Gtk.Action("FileQuit", None, None, Gtk.STOCK_QUIT)
+        action_filequit.connect("activate", self.on_menu_file_quit)
+        action_group.add_action(action_filequit)
+
+    def add_edit_menu_actions(self, action_group):
+        action_group.add_actions([
+            ("EditMenu", None, "Edit"),
+            ("EditCopy", Gtk.STOCK_COPY, None, None, None,
+             self.on_menu_others),
+            ("EditPaste", Gtk.STOCK_PASTE, None, None, None,
+             self.on_menu_others),
+            ("EditSomething", None, "Something", "<control><alt>S", None,
+             self.on_menu_others)
+        ])
+
+    def add_choices_menu_actions(self, action_group):
+        action_group.add_action(Gtk.Action("ChoicesMenu", "Choices", None,
+                                           None))
+
+        action_group.add_radio_actions([
+            ("ChoiceOne", None, "One", None, None, 1),
+            ("ChoiceTwo", None, "Two", None, None, 2)
+        ], 1, self.on_menu_choices_changed)
+
+        three = Gtk.ToggleAction("ChoiceThree", "Three", None, None)
+        three.connect("toggled", self.on_menu_choices_toggled)
+        action_group.add_action(three)
+
+    def create_ui_manager(self):
+        uimanager = Gtk.UIManager()
+
+        # Throws exception if something went wrong
+        uimanager.add_ui_from_string(UI_INFO)
+
+        # Add the accelerator group to the toplevel window
+        accelgroup = uimanager.get_accel_group()
+        self.add_accel_group(accelgroup)
+        return uimanager
+
+    def on_menu_file_new_generic(self, widget):
+
+        cursor = self.conn.cursor()
+        cursor.execute("select * from componentes")
+        taboaBaseDatos = []
+
+        for fila in cursor:
+            taboaBaseDatos.append(fila)
+
+        taboa = Table(taboaBaseDatos)
+
+        guion = []
+        guion.append(taboa)
+
+        documento = SimpleDocTemplate("Informe.pdf", pagesize=A4, showBoundary=0)
+        documento.build(guion)
+        cursor.close()
+        print("by Platypus")
+
+    def on_menu_file_quit(self, widget):
+        Gtk.main_quit()
+
+    def on_menu_others(self, widget):
+        print("Menu item " + widget.get_name() + " was selected")
+
+    def on_menu_choices_changed(self, widget, current):
+        print(current.get_name() + " was selected.")
+
+    def on_menu_choices_toggled(self, widget):
+        if widget.get_active():
+            print(widget.get_name() + " activated")
+        else:
+            print(widget.get_name() + " deactivated")
+
+    def on_button_press_event(self, widget, event):
+        # Check if right mouse button was preseed
+        if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3:
+            self.popup.popup(None, None, None, None, event.button, event.time)
+            return True  # event has been handled
