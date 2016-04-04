@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sqlite3 as dbapi
 from reportlab.platypus import Paragraph
 from reportlab.platypus import SimpleDocTemplate

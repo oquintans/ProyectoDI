@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from gi.repository import Gtk
-from BD.ConexionBD import ConexionBD
-from Ventanas.VentanaCliente import WindowC
-from Ventanas.VentanaAdmin import WindowA
+from ConexionBD import ConexionBD
+from VentanaCliente import WindowC
+from VentanaAdmin import WindowA
 
 __author__ = 'oquintansocampo'
 

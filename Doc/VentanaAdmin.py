@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+
 from DistUpgrade.GtkProgress import GtkAcquireProgress
 import gi
 
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, Gdk
-from BD.ConexionBD import ConexionBD
+from ConexionBD import ConexionBD
 
 UI_INFO = """
 <ui>
@@ -43,9 +45,9 @@ UI_INFO = """
 """
 
 
-class WindowC(Gtk.Window):
+class WindowA(Gtk.Window):
     def __init__(self):
-        Gtk.Window.__init__(self, title="Cliente")
+        Gtk.Window.__init__(self, title="Admin")
         self.set_border_width(10)
         self.set_default_size(500, 100)
         self.conn = ConexionBD()
@@ -53,7 +55,6 @@ class WindowC(Gtk.Window):
         # LayoutBox
         self.box = Gtk.Box(spacing=6)
         self.box.set_orientation(Gtk.Orientation.VERTICAL)
-        self.box.set_border_width(1)
         self.add(self.box)
 
         # Menu
@@ -148,9 +149,9 @@ class WindowC(Gtk.Window):
         self.cbPrecio.set_active(0)
 
         # Botones
-        self.b_comprar = Gtk.Button(label="Comprar", stock=Gtk.STOCK_ADD)
-        self.b_consultar = Gtk.Button(label="Consultar", stock=Gtk.STOCK_INFO)
-        self.b_salir = Gtk.Button(label="Salir", stock=Gtk.STOCK_QUIT)
+        self.b_comprar = Gtk.Button(label="Comprar")
+        self.b_consultar = Gtk.Button(label="Consultar")
+        self.b_salir = Gtk.Button(label="Salir")
 
         self.b_comprar.connect("clicked", self.comprar)
         self.b_consultar.connect("clicked", self.consultar)

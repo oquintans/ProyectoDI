@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+
 from DistUpgrade.GtkProgress import GtkAcquireProgress
 import gi
 
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, Gdk
-from BD.ConexionBD import ConexionBD
+from ConexionBD import ConexionBD
 
 UI_INFO = """
 <ui>

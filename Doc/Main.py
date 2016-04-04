@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
+
 from gi.repository import Gtk
-from Ventanas.VentanaLogIn import WindowL
-# from Ventanas.VentanaCliente import WindowC
+from VentanaLogIn import WindowL
 
 
 # Instanciar
