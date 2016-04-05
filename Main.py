@@ -1,9 +1,9 @@
 from gi.repository import Gtk
-from Ventanas.VentanaLogIn import WindowL
-from Ventanas.VentanaCliente import WindowC
-from Ventanas.VentanaAdmin import WindowA
-from BD.ConexionBD import ConexionBD
-from Clases import Componentes
+from VentanaLogIn import WindowL
+from VentanaCliente import WindowC
+from VentanaAdmin import WindowA
+from ConexionBD import ConexionBD
+from Componentes import Componentes
 
 # Instanciar
 fiestra = WindowL()
