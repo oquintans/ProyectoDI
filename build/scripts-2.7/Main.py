@@ -1,7 +1,10 @@
-# -*- coding: utf-8 -*-
+from VentanaCliente import WindowC
+from VentanaAdmin import WindowA
+from ConexionBD import ConexionBD
+from Componentes import Componentes
 
-from gi.repository import Gtk
 from VentanaLogIn import WindowL
+from gi.repository import Gtk
 
 
 # Instanciar
@@ -11,4 +14,3 @@ fiestra.set_resizable(False)
 fiestra.connect("delete-event", Gtk.main_quit)
 fiestra.show_all()
 Gtk.main()
-
